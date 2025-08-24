@@ -71,6 +71,10 @@ class Bank:
 
     def add_customer(self, name, customer_number):
         """Add a new customer to the bank."""
+
+        if self.get_customer(customer_number):
+            return None  # Prevent duplicate customer numbers
+        
         customer = Customer(name, customer_number)
         self.customers.append(customer)
         return customer
@@ -103,6 +107,11 @@ class Bank:
     def get_customers(self):
         """Get a list of all customers in the bank."""
         return self.customers
+
+    def get_total_balance(self):
+        """Get the total balance of all customers in the bank."""
+        total = sum(acc.balance for cust in self.customers for acc in cust.accounts)
+        return total
 
 
 def input_positive_number(prompt):
@@ -143,7 +152,8 @@ message_dic = {
     "add_account_true": "Successfully Added New Account. Press Enter to Continue...",
     "add_account_false": "Failed to Add New Account (maybe duplicate number). Press Enter to Continue...",
     "account_not_found": "Account Not Found! Press Enter to Continue...",
-    "customer_not_found": "Customer Not Found! Press Enter to Continue..."
+    "customer_not_found": "Customer Not Found! Press Enter to Continue...",
+    "existing_customer": "Customer Number Already Exists! Press Enter to Continue...",
 }
 
 clear_console()
@@ -158,8 +168,11 @@ def main() -> None:
             case 'c':  # Add Customer
                 name = input("Enter Name:")
                 cust_no = input_positive_number("Enter Customer Number:")
-                bank.add_customer(name, cust_no)
-                print(f"Customer {name} Successfully Added.")
+                cust = bank.add_customer(name, cust_no)
+                if cust:
+                    print(f"\nCustomer {name} Successfully Added.")
+                else:
+                    print(message_dic["existing_customer"])
                 input("Press Enter to Continue...")
                 clear_console()
 
@@ -221,9 +234,12 @@ def main() -> None:
                     for cust in customers:
                         print(cust.get_accounts())
                         print("-"*30)
+                    print("*"*30)
+                    print(f"Total Customers: {len(customers)}")
+                    print(f"Total Balance in Bank: {bank.get_total_balance():.2f}")
                 else:
                     print("No Customers Found!")
-                input("Press Enter to Continue...")
+                input("\nPress Enter to Continue...")
                 clear_console()
 
             case 'q':  # Quit
