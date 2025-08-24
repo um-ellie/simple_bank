@@ -179,7 +179,7 @@ bank = Bank("My Bank") # Create a Bank instance
 """Main loop for user interaction"""
 
 while True:
-    command = input("\nMenu |Add Customer(c) | Add Account(a) |Balance(b)| Deposit(d) | Withdraw(w) | Quit(q) :\n").strip().lower()
+    command = input("\nMenu |Add Customer(c) | Add Account(a) |Balance(b)| Deposit(d) | Withdraw(w) | Quit(q) : ").strip().lower()
 
     match command :
         case 'c' : # Add Customer
