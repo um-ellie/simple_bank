@@ -15,20 +15,21 @@ class Account:
 
     def get_balance(self):
         """Get the current balance of the account."""
-        return f"Account {self.account_number} Balance {self.balance}"
+        return f"Account {self.account_number} Balance: {self.balance:.2f}"
 
     def deposit(self, amount):
         """Deposit money into the account."""
-        self.balance += amount
-        return True
+        if amount > 0:
+            self.balance += amount
+            return True
+        return False
 
     def withdraw(self, amount):
         """Withdraw money from the account."""
-        if self.balance >= amount:
+        if 0 < amount <= self.balance:
             self.balance -= amount
             return True
-        else:
-            return False
+        return False
 
     def __str__(self):
         return f"Account {self.account_number} | Balance: {self.balance}"
@@ -44,8 +45,11 @@ class Customer:
     def get_accounts(self):
         """Get a list of all accounts for the customer."""
         customer_output = f"{self.name} with customer number {self.customer_number}:\n"
+        total_balance = 0
         for acc in self.accounts:
             customer_output += str(acc) + "\n"
+            total_balance += acc.balance
+        customer_output += f"Total Balance: {total_balance:.2f}"
         return customer_output
 
     def add_account(self, account_number, balance):
@@ -127,7 +131,7 @@ bank = Bank("My Bank")  # Create a Bank instance
 
 """Main loop for user interaction"""
 while True:
-    command = input("\nMenu |Add Customer(c) | Add Account(a) |Balance(b)| Deposit(d) | Withdraw(w) | Quit(q) : ").strip().lower()
+    command = input("\nMenu |Add Customer(c) | Add Account(a) |Balance(b)| Deposit(d) | Withdraw(w) | List Accounts(l) | Quit(q) : ").strip().lower()
 
     match command:
         case 'c':  # Add Customer
@@ -175,6 +179,15 @@ while True:
                     input(message_dic["withdraw_false"])
             else:
                 input(message_dic["account_not_found"])
+
+        case 'l':  # List Accounts
+            cust_no = input_positive_number("Enter Customer Number:")
+            customer = bank.get_customer(cust_no)
+            if customer:
+                print(customer.get_accounts())
+            else:
+                print("Customer Not Found!")
+
 
         case 'q':  # Quit
             print("Thank you for using our banking system. Goodbye!")
