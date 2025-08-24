@@ -191,11 +191,13 @@ def input_positive_number(prompt: str) -> int:
             print(message_dic["invalid"])
 
 
-def show_menu() -> str:
+def show_menu(bank: Bank) -> str:
     """Function to display the menu options."""
     print("\n" + "=" * 30)
     print("Simple Banking System")
     print("=" * 30)
+    print(f"Total Customers: {len(bank.customers)}")
+    print(f"Total Balance in Bank: {bank.get_total_balance():.2f}\n")
     print(" [c] Add Customer")
     print(" [a] Add Account")
     print(" [b] Balance")
@@ -235,7 +237,7 @@ def main() -> None:
         print("No saved data found. Starting with a new bank.")
 
     while True:
-        command = show_menu()
+        command = show_menu(bank)
 
         match command:
             case 'c':  # Add Customer
@@ -324,7 +326,7 @@ def main() -> None:
                 clear_console()
 
             case 'q':  # Quit
-                print("Thank you for using our banking system. Goodbye!")
+                print("Thank you for using our banking system. Goodbye!\n\n")
                 break
 
             case _:  # Invalid Input
