@@ -17,21 +17,39 @@ class Account :
         self.account_number = account_number
         self.balance = balance
 
+
     def get_balance(self) :
+
+        """
+        Get the current balance of the account.
+        """
+
         return f"Account {self.account_number} Balance {self.balance}"
 
+
     def deposit(self, amount) :
-        self.balance +=amount
+        
+        """
+        Deposit money into the account.
+        """
+        
+        self.balance += amount
         return True
 
 
     def withdraw(self, amount) :
+
+        """
+        Withdraw money from the account.
+        """
+
         if self.balance >= amount :
             self.balance -= amount
             return True
         else :
             return False
     
+
     def __str__(self):
         return f"Account {self.account_number} | Balance: {self.balance}"
         
@@ -47,12 +65,23 @@ class Customer :
         self.accounts = accounts if accounts is not None else []
 
     def get_accounts(self) :
+
+        """
+        Get a list of all accounts for the customer.
+        """
+
         customer_output = f"{self.name} with customer number {self.customer_number}:\n"
         for acc in self.accounts :
             customer_output += str(acc) + "\n"
         return customer_output
     
+
     def add_account(self, account_number, balance) :
+        
+        """
+        Add a new account for the customer.
+        """
+
         account = Account(account_number, balance)
         self.accounts.append(account)
         return account
@@ -67,23 +96,43 @@ class Bank :
         self.customers = []
 
     def add_customer(self, name, customer_number) :
+        
+        """
+        Add a new customer to the bank.
+        """
+
         customer = Customer(name, customer_number)
         self.customers.append(customer)
         return customer
     
     def get_customer(self,customer_number) :
+
+        """
+        Get a customer by their customer number.
+        """
+
         for customer in self.customers :
             if customer.customer_number == customer_number :
                 return customer
         return None
     
     def add_account(self, customer_number, account_number, balance=0) :
+
+        """
+        Add a new account for a customer.
+        """
+
         customer = self.get_customer(customer_number)
         if customer :
             return customer.add_account(account_number, balance)
         return None
     
     def find_account(self, account_number):
+
+        """
+        Find an account by its account number.
+        """
+
         for customer in self.customers :
             for account in customer.accounts:
                 if account.account_number == account_number :
@@ -134,10 +183,11 @@ while True:
 
     match command :
         case 'c' : # Add Customer
+
             name = input("Enter Name:")
-            cuts_no = input_positive_number("Enter Customer Number:")
-            bank.add_customer(name, cuts_no)
-            print(f"Customber {name} Successfully Added.")
+            cust_no = input_positive_number("Enter Customer Number:")
+            bank.add_customer(name, cust_no)
+            print(f"Customer {name} Successfully Added.")
             input("Please Enter to Continue...")
 
         case 'a' : # Add Account
