@@ -3,6 +3,7 @@ Allows adding customers and accounts, depositing, withdrawing, and checking bala
 
 import os
 
+
 def clear_console():
     os.system('cls' if os.name == 'nt' else 'clear')
 
@@ -32,7 +33,7 @@ class Account:
         return False
 
     def __str__(self):
-        return f"Account {self.account_number} | Balance: {self.balance}"
+        return f"Account {self.account_number} | Balance: {self.balance:.2f}"
 
 class Customer:
     """A class representing a bank customer."""
@@ -98,6 +99,11 @@ class Bank:
                 if account.account_number == account_number:
                     return account
         return None
+    
+    def get_customers(self):
+        """Get a list of all customers in the bank."""
+        return self.customers
+
 
 def input_positive_number(prompt):
     """Function to get a valid positive number from user input."""
@@ -111,6 +117,21 @@ def input_positive_number(prompt):
         except ValueError:
             print(message_dic["invalid"])
 
+def show_menu():
+    """Function to display the menu options."""
+    print("\n" + "="*30)
+    print("Simple Banking System")
+    print("="*30)
+    print(" [c] Add Customer")
+    print(" [a] Add Account")
+    print(" [b] Balance")
+    print(" [d] Deposit")
+    print(" [w] Withdraw")
+    print(" [l] List Customers")
+    print(" [q] Quit")
+    print("="*30)
+    return input("Choose an option: ").strip().lower()
+
 # Dictionary for user messages
 message_dic = {
     "deposit_true": "Deposit Successfully done! Press Enter to Continue...",
@@ -122,76 +143,95 @@ message_dic = {
     "add_account_true": "Successfully Added New Account. Press Enter to Continue...",
     "add_account_false": "Failed to Add New Account (maybe duplicate number). Press Enter to Continue...",
     "account_not_found": "Account Not Found! Press Enter to Continue...",
+    "customer_not_found": "Customer Not Found! Press Enter to Continue..."
 }
 
 clear_console()
 print("Welcome to the Simple Banking System!")
 
-bank = Bank("My Bank")  # Create a Bank instance
+def main() -> None:
+    bank = Bank("My Bank")  # Create a Bank instance
+    while True:
+        command = show_menu()
 
-"""Main loop for user interaction"""
-while True:
-    command = input("\nMenu |Add Customer(c) | Add Account(a) |Balance(b)| Deposit(d) | Withdraw(w) | List Accounts(l) | Quit(q) : ").strip().lower()
+        match command:
+            case 'c':  # Add Customer
+                name = input("Enter Name:")
+                cust_no = input_positive_number("Enter Customer Number:")
+                bank.add_customer(name, cust_no)
+                print(f"Customer {name} Successfully Added.")
+                input("Press Enter to Continue...")
+                clear_console()
 
-    match command:
-        case 'c':  # Add Customer
-            name = input("Enter Name:")
-            cust_no = input_positive_number("Enter Customer Number:")
-            bank.add_customer(name, cust_no)
-            print(f"Customer {name} Successfully Added.")
-            input("Press Enter to Continue...")
-
-        case 'a':  # Add Account
-            cust_no = input_positive_number("Enter Customer Number:")
-            acc_no = input_positive_number("Enter Account Number:")
-            account = bank.add_account(cust_no, acc_no, 0)
-            if account:
-                input(message_dic["add_account_true"])
-            else:
-                input(message_dic["add_account_false"])
-
-        case 'b':  # Check Balance
-            acc_no = input_positive_number("Enter Account Number:")
-            account = bank.find_account(acc_no)
-            if account:
-                print(account.get_balance())
-            else:
-                input(message_dic["account_not_found"])
-
-        case 'd':  # Deposit
-            acc_no = input_positive_number("Enter Account Number:")
-            account = bank.find_account(acc_no)
-            if account:
-                amount = input_positive_number("Enter Amount to Deposit:")
-                if account.deposit(amount):
-                    input(message_dic["deposit_true"])
-            else:
-                input(message_dic["account_not_found"])
-
-        case 'w':  # Withdraw
-            acc_no = input_positive_number("Enter Account Number:")
-            account = bank.find_account(acc_no)
-            if account:
-                amount = input_positive_number("Enter Amount to Withdraw:")
-                if account.withdraw(amount):
-                    input(message_dic["withdraw_true"])
+            case 'a':  # Add Account
+                cust_no = input_positive_number("Enter Customer Number:")
+                acc_no = input_positive_number("Enter Account Number:")
+                account = bank.add_account(cust_no, acc_no, 0)
+                if account:
+                    input(message_dic["add_account_true"])
+                    clear_console()
                 else:
-                    input(message_dic["withdraw_false"])
-            else:
-                input(message_dic["account_not_found"])
+                    input(message_dic["add_account_false"])
+                    clear_console()
 
-        case 'l':  # List Accounts
-            cust_no = input_positive_number("Enter Customer Number:")
-            customer = bank.get_customer(cust_no)
-            if customer:
-                print(customer.get_accounts())
-            else:
-                print("Customer Not Found!")
+            case 'b':  # Check Balance
+                cust_no = input_positive_number("Enter Customer Number:")
+                customer = bank.get_customer(cust_no)
+                if customer:
+                    print(customer.get_accounts())
+                    input("Press Enter to Continue...")
+                    clear_console()
+                else:
+                    input(message_dic["customer_not_found"])
+                    clear_console()
 
+            case 'd':  # Deposit
+                acc_no = input_positive_number("Enter Account Number:")
+                account = bank.find_account(acc_no)
+                if account:
+                    amount = input_positive_number("Enter Amount to Deposit:")
+                    if account.deposit(amount):
+                        input(message_dic["deposit_true"])
+                    else:
+                        input(message_dic["deposit_false"])
+                        clear_console()
+                else:
+                    input(message_dic["account_not_found"])
+                    clear_console()
 
-        case 'q':  # Quit
-            print("Thank you for using our banking system. Goodbye!")
-            break
+            case 'w':  # Withdraw
+                acc_no = input_positive_number("Enter Account Number:")
+                account = bank.find_account(acc_no)
+                if account:
+                    amount = input_positive_number("Enter Amount to Withdraw:")
+                    if account.withdraw(amount):
+                        input(message_dic["withdraw_true"])
+                        clear_console()
+                    else:
+                        input(message_dic["withdraw_false"])
+                        clear_console()
+                else:
+                    input(message_dic["account_not_found"])
+                    clear_console()
 
-        case _:  # Invalid Input
-            print(message_dic["invalid"])
+            case 'l':  # List Customers
+                customers = bank.get_customers()
+                if customers:
+                    print("List of Customers:\n")
+                    for cust in customers:
+                        print(cust.get_accounts())
+                        print("-"*30)
+                else:
+                    print("No Customers Found!")
+                input("Press Enter to Continue...")
+                clear_console()
+
+            case 'q':  # Quit
+                print("Thank you for using our banking system. Goodbye!")
+                break
+            
+            case _:  # Invalid Input
+                print(message_dic["invalid"])
+
+if __name__ == "__main__":
+    main()
